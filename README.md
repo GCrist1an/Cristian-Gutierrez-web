@@ -45,6 +45,7 @@ Los cambios importantes siguen el flujo:
 
 - `main` representa producción.
 - las demás ramas y Pull Requests se utilizan como previews;
+- cada Preview Deployment de Vercel es inmutable y corresponde a un commit concreto;
 - variables de entorno y secretos se administran en Vercel, no se almacenan en el repositorio.
 
 ## Alcance de la primera versión

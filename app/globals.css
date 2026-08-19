@@ -141,9 +141,21 @@ button {
     linear-gradient(to bottom, rgba(88, 166, 255, 0.025), transparent 45%);
 }
 
+img[src="/images/cristian-gutierrez.webp"] {
+  min-height: clamp(30rem, 58vw, 44rem);
+  background-image: url("/images/cristian-gutierrez.webp");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
 @media (max-width: 640px) {
   .seccion {
     padding-block: 5rem;
+  }
+
+  img[src="/images/cristian-gutierrez.webp"] {
+    min-height: 28rem;
   }
 }
 
