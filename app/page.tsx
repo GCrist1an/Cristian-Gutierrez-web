@@ -7,7 +7,7 @@ import {
   ArrowUpRight,
   BriefcaseBusiness,
   Code2,
-  Github,
+  GitBranch as Github,
   Mail,
   MapPin,
   Menu,
