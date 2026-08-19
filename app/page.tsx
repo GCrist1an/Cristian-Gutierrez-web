@@ -144,6 +144,7 @@ export default function Home() {
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a href="#trabajo" className="boton-principal">Ver mi trabajo <ArrowDownRight size={18} /></a>
+              <a href="/cv/Cristian-David-Gutierrez-CV.pdf" download="Cristian-David-Gutierrez-CV.pdf" className="boton-secundario"><ArrowDownRight size={17} /> Descargar CV</a>
               <a href="https://github.com/GCrist1an" target="_blank" rel="noreferrer" className="boton-secundario"><GitBranch size={17} /> GitHub</a>
               <a href="mailto:cdgutierrez00@gmail.com" className="boton-secundario"><Mail size={17} /> Contactar</a>
             </div>
