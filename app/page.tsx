@@ -155,14 +155,11 @@ export default function Home() {
 
           <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }} className="mx-auto w-full max-w-[430px]">
             <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[var(--surface)] shadow-2xl shadow-black/35">
-              <img
-                src="/images/cristian-gutierrez.webp"
-                alt="Retrato profesional de Cristian David Gutiérrez"
-                width="900"
-                height="1125"
-                loading="eager"
-                fetchPriority="high"
-                className="block h-auto w-full object-cover"
+              <div
+                role="img"
+                aria-label="Retrato profesional de Cristian David Gutiérrez"
+                className="aspect-[430/764] w-full bg-cover bg-center bg-no-repeat"
+                style={{ backgroundImage: 'url("/images/cristian-gutierrez.webp")' }}
               />
               <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-black/45 p-4 backdrop-blur-md">
                 <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">Enfoque</p>
