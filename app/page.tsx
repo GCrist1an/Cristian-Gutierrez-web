@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowDownRight,
   ArrowUpRight,
-  Facebook,
   GitBranch,
   Mail,
   MapPin,
@@ -264,7 +263,7 @@ export default function Home() {
             <div className="mt-6 flex flex-wrap gap-3">
               <a href="https://www.gutierrezsystems.online/" target="_blank" rel="noreferrer" className="boton-principal">Sitio corporativo <ArrowUpRight size={16} /></a>
               <a href="https://github.com/Gutierrez-Systems" target="_blank" rel="noreferrer" className="boton-secundario"><GitBranch size={16} /> GitHub</a>
-              <a href="https://www.facebook.com/GutierrezSystems/" target="_blank" rel="noreferrer" className="boton-secundario"><Facebook size={16} /> Facebook</a>
+              <a href="https://www.facebook.com/GutierrezSystems/" target="_blank" rel="noreferrer" className="boton-secundario"><img src="https://cdn.simpleicons.org/facebook/ffffff" alt="" width="16" height="16" className="h-4 w-4 object-contain" /> Facebook</a>
             </div>
           </div>
 
