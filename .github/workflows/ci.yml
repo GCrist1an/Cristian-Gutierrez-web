@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - agent/fase-1b-fundacion-web-personal
 
 permissions:
   contents: read
