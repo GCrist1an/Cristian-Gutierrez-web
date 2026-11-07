@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import respaldo from "../data/perfil.json";
-import { enlaceWhatsApp, obtenerPerfil, proyectosPortafolio, validarPerfil, type Perfil } from "./perfil";
+import { enlaceWhatsApp, obtenerPerfil, perfilPublico, proyectosPortafolio, validarPerfil, type Perfil } from "./perfil";
 
 const copia = (): Perfil => structuredClone(respaldo) as Perfil;
 
@@ -94,6 +94,19 @@ describe("proyectosPortafolio", () => {
     const [primero] = proyectosPortafolio(perfil);
     expect(primero.nombre).toBeNull();
     expect(primero.descripcion).toBe(perfil.proyectos[0].descripcion);
+  });
+});
+
+describe("perfilPublico", () => {
+  it("no expone proyectos fuera del portafolio ni nombres ocultos", () => {
+    const perfil = copia();
+    perfil.proyectos[0].mostrar_nombre = false;
+    const json = JSON.stringify(perfilPublico(perfil));
+    const fuera = perfil.proyectos.filter((p) => !p.canales.includes("portafolio"));
+    expect(fuera.length).toBeGreaterThan(0);
+    for (const p of fuera) expect(json).not.toContain(p.descripcion);
+    expect(json).not.toContain(`"${perfil.proyectos[0].nombre}"`);
+    expect(json).not.toContain("experiencia");
   });
 });
 

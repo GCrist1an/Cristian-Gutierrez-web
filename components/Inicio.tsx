@@ -4,14 +4,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowDownRight,
   ArrowUpRight,
+  BriefcaseBusiness,
   GitBranch,
   Mail,
   MapPin,
   Menu,
+  MessageCircle,
   X,
 } from "lucide-react";
 import { useState } from "react";
-import type { Perfil } from "@/lib/perfil";
+import { enlaceWhatsApp, type PerfilPublico } from "@/lib/perfil";
 
 const enlaces = [
   ["Trabajo", "#trabajo"],
@@ -74,8 +76,10 @@ const entrada = {
   transition: { duration: 0.45, ease: "easeOut" as const },
 };
 
-export default function Inicio({ perfil }: { perfil: Perfil }) {
-  const { contacto } = perfil;
+export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
+  const { contacto, persona } = perfil;
+  const [nombrePila, ...resto] = persona.nombre_corto.split(" ");
+  const apellidos = resto.join(" ");
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
@@ -84,7 +88,7 @@ export default function Inicio({ perfil }: { perfil: Perfil }) {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
           <a href="#inicio" className="flex items-center gap-3" aria-label="Ir al inicio">
             <span className="grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-white/[0.03] text-sm font-bold">CG</span>
-            <span className="hidden text-sm font-medium text-[var(--muted-light)] sm:inline">Cristian Gutiérrez</span>
+            <span className="hidden text-sm font-medium text-[var(--muted-light)] sm:inline">{persona.nombre_corto}</span>
           </a>
 
           <nav className="hidden items-center gap-6 lg:flex" aria-label="Navegación principal">
@@ -132,35 +136,34 @@ export default function Inicio({ perfil }: { perfil: Perfil }) {
         <div className="hero-glow absolute inset-0 -z-10" />
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-14 pt-8 sm:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:px-10 lg:pb-16 lg:pt-12">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.55 }}>
-            <div className="mb-5 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">
-              <span>Software</span><span>·</span><span>Automatización</span><span>·</span><span>Operaciones</span>
-            </div>
+            <p className="mb-5 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">{persona.titular}</p>
             <h1 className="max-w-4xl text-[clamp(3rem,7vw,6.5rem)] font-semibold leading-[0.92] tracking-[-0.06em]">
-              Cristian David<br /><span className="texto-gradiente">Gutiérrez</span>
+              {nombrePila}<br /><span className="texto-gradiente">{apellidos}</span>
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted-light)] sm:text-xl">
-              Transformo procesos operativos en soluciones tecnológicas trazables, eficientes y mantenibles.
-            </p>
-            <p className="mt-4 max-w-2xl leading-7 text-[var(--muted)]">
-              Combino operación, automatización y desarrollo de software para construir herramientas claras para quien las usa y mantenibles para quien debe evolucionarlas.
-            </p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted-light)] sm:text-xl">{persona.frase}</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a href="#trabajo" className="boton-principal">Ver mi trabajo <ArrowDownRight size={18} /></a>
               <a href="/cv/CV Cristian Gutierrez ***REMOVED***.pdf" download="Cristian Gutierrez ***REMOVED***.pdf" className="boton-secundario"><ArrowDownRight size={17} /> Descargar CV</a>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-3" aria-label="Contacto">
+              <a href={`mailto:${contacto.correo}`} className="boton-secundario"><Mail size={17} /> Correo</a>
+              <a href={enlaceWhatsApp(contacto.whatsapp)} target="_blank" rel="noreferrer" className="boton-secundario"><MessageCircle size={17} /> WhatsApp</a>
               <a href={contacto.github} target="_blank" rel="noreferrer" className="boton-secundario"><GitBranch size={17} /> GitHub</a>
-              <a href={`mailto:${contacto.correo}`} className="boton-secundario"><Mail size={17} /> Contactar</a>
+              <a href={contacto.linkedin} target="_blank" rel="noreferrer" className="boton-secundario"><BriefcaseBusiness size={17} /> LinkedIn</a>
             </div>
-            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
-              <span className="flex items-center gap-2"><MapPin size={15} /> Colombia</span>
-              <span>Disponible para proyectos y colaboración</span>
-            </div>
+            {(persona.ubicacion || persona.disponibilidad) && (
+              <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
+                {persona.ubicacion && <span className="flex items-center gap-2"><MapPin size={15} /> {persona.ubicacion}</span>}
+                {persona.disponibilidad && <span>{persona.disponibilidad}</span>}
+              </div>
+            )}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }} className="mx-auto w-full max-w-[430px]">
             <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[var(--surface)] shadow-2xl shadow-black/35">
               <div
                 role="img"
-                aria-label="Retrato profesional de Cristian David Gutiérrez"
+                aria-label={`Retrato profesional de ${persona.nombre_corto}`}
                 className="aspect-[430/764] w-full bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: 'url("/images/cristian-gutierrez.webp")' }}
               />

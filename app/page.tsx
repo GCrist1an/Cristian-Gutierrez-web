@@ -1,9 +1,9 @@
 import Inicio from "@/components/Inicio";
-import { obtenerPerfil } from "@/lib/perfil";
+import { obtenerPerfil, perfilPublico } from "@/lib/perfil";
 
 export const revalidate = 86400;
 
 export default async function Home() {
   const perfil = await obtenerPerfil();
-  return <Inicio perfil={perfil} />;
+  return <Inicio perfil={perfilPublico(perfil)} />;
 }

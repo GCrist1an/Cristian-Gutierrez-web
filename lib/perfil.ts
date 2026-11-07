@@ -154,6 +154,16 @@ export function proyectosPortafolio(perfil: Perfil): ProyectoPortafolio[] {
     .map((p) => ({ ...p, nombre: p.mostrar_nombre ? p.nombre : null }));
 }
 
+/** Datos que se envían al navegador: nada de proyectos fuera del canal portafolio ni nombres ocultos. */
+export type PerfilPublico = Pick<Perfil, "persona" | "contacto" | "habilidades" | "capacidades"> & {
+  proyectos: ProyectoPortafolio[];
+};
+
+export function perfilPublico(perfil: Perfil): PerfilPublico {
+  const { persona, contacto, habilidades, capacidades } = perfil;
+  return { persona, contacto, habilidades, capacidades, proyectos: proyectosPortafolio(perfil) };
+}
+
 /** Enlace wa.me a partir del número del JSON (solo dígitos). */
 export function enlaceWhatsApp(numero: string): string {
   return `https://wa.me/${numero.replace(/\D/g, "")}`;
