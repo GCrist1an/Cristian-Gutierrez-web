@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import respaldo from "../data/perfil.json";
-import { enlaceWhatsApp, obtenerPerfil, perfilPublico, proyectosPortafolio, validarPerfil, type Perfil } from "./perfil";
+import { obtenerPerfil } from "./obtener-perfil";
+import { enlaceWhatsApp, perfilPublico, proyectosPortafolio, validarPerfil, type Perfil } from "./perfil";
 
 const copia = (): Perfil => structuredClone(respaldo) as Perfil;
 
@@ -84,16 +85,38 @@ describe("proyectosPortafolio", () => {
     const perfil = copia();
     const ids = proyectosPortafolio(perfil).map((p) => p.id);
     const esperados = perfil.proyectos.filter((p) => p.canales.includes("portafolio")).map((p) => p.id);
-    expect(ids).toEqual(esperados);
+    expect([...ids].sort()).toEqual([...esperados].sort());
     expect(ids).not.toContain("gs-contractops");
   });
 
   it("oculta el nombre si mostrar_nombre es false", () => {
     const perfil = copia();
     perfil.proyectos[0].mostrar_nombre = false;
-    const [primero] = proyectosPortafolio(perfil);
-    expect(primero.nombre).toBeNull();
-    expect(primero.descripcion).toBe(perfil.proyectos[0].descripcion);
+    const proyecto = proyectosPortafolio(perfil).find((p) => p.id === perfil.proyectos[0].id)!;
+    expect(proyecto.nombre).toBeNull();
+    expect(proyecto.descripcion).toBe(perfil.proyectos[0].descripcion);
+  });
+
+  it("pone QA Portfolio y Makeupstore primero y marcados como destacados", () => {
+    const perfil = copia();
+    perfil.proyectos.reverse();
+    const lista = proyectosPortafolio(perfil);
+    expect(lista.slice(0, 2).map((p) => p.id)).toEqual(["qa-portfolio", "makeupstore"]);
+    expect(lista.filter((p) => p.destacado).map((p) => p.id)).toEqual(["qa-portfolio", "makeupstore"]);
+  });
+});
+
+describe("persona.enfoque", () => {
+  it("es opcional", () => {
+    const perfil = copia();
+    delete perfil.persona.enfoque;
+    expect(() => validarPerfil(perfil)).not.toThrow();
+  });
+
+  it("si existe, debe ser una lista de textos", () => {
+    const perfil = copia() as unknown as { persona: Record<string, unknown> };
+    perfil.persona.enfoque = "Personas";
+    expect(() => validarPerfil(perfil)).toThrow(/persona\.enfoque/);
   });
 });
 

@@ -1,7 +1,5 @@
-import respaldo from "../data/perfil.json";
-
-export const URL_PERFIL = "https://raw.githubusercontent.com/GCrist1an/GCrist1an/main/perfil.json";
-export const REVALIDAR_SEGUNDOS = 60 * 60 * 24;
+// Tipos, validación y utilidades puras. La carga (fetch + respaldo) vive en lib/obtener-perfil.ts
+// para que el JSON completo de respaldo nunca termine en el bundle del navegador.
 
 export const ESTADOS = ["produccion", "publicado", "desarrollo", "colaboracion", "academico", "privado"] as const;
 export type EstadoProyecto = (typeof ESTADOS)[number];
@@ -23,6 +21,7 @@ export type Persona = {
   ubicacion?: string;
   disponibilidad?: string;
   sobre_mi?: string;
+  enfoque?: string[];
 };
 
 export type Contacto = {
@@ -64,8 +63,11 @@ export type Perfil = {
   idiomas?: { idioma: string; nivel: string }[];
 };
 
+/** Proyectos que se destacan en el portafolio, en este orden. */
+export const DESTACADOS = ["qa-portfolio", "makeupstore"] as const;
+
 /** Proyecto listo para mostrar: `nombre` es null cuando no se debe revelar. */
-export type ProyectoPortafolio = Omit<Proyecto, "nombre"> & { nombre: string | null };
+export type ProyectoPortafolio = Omit<Proyecto, "nombre"> & { nombre: string | null; destacado: boolean };
 
 // ---------- Validación ----------
 
@@ -89,8 +91,10 @@ export function validarPerfil(datos: unknown): Perfil {
 
   const { persona, contacto, habilidades, proyectos, capacidades } = datos;
 
-  if (esObjeto(persona)) exigirTextos(persona, ["nombre", "nombre_corto", "titular", "frase"], "persona", errores);
-  else errores.push("persona debe ser un objeto");
+  if (esObjeto(persona)) {
+    exigirTextos(persona, ["nombre", "nombre_corto", "titular", "frase"], "persona", errores);
+    if (persona.enfoque !== undefined && !esListaTextos(persona.enfoque)) errores.push("persona.enfoque debe ser una lista de textos");
+  } else errores.push("persona debe ser un objeto");
 
   if (esObjeto(contacto)) exigirTextos(contacto, ["correo", "whatsapp", "linkedin", "github", "empresa"], "contacto", errores);
   else errores.push("contacto debe ser un objeto");
@@ -128,30 +132,21 @@ export function validarPerfil(datos: unknown): Perfil {
   return datos as Perfil;
 }
 
-// ---------- Carga ----------
-
-/**
- * Lee perfil.json desde GitHub (server-side, revalidación diaria).
- * Si la descarga o la validación fallan, usa el respaldo local data/perfil.json.
- */
-export async function obtenerPerfil(): Promise<Perfil> {
-  try {
-    const respuesta = await fetch(URL_PERFIL, { next: { revalidate: REVALIDAR_SEGUNDOS } });
-    if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
-    return validarPerfil(await respuesta.json());
-  } catch (error) {
-    console.warn("[perfil] Usando respaldo data/perfil.json:", error instanceof Error ? error.message : error);
-    return validarPerfil(respaldo);
-  }
-}
-
 // ---------- Utilidades de presentación ----------
 
-/** Proyectos marcados para el canal "portafolio", ocultando el nombre si mostrar_nombre es false. */
+/**
+ * Proyectos marcados para el canal "portafolio", ocultando el nombre si mostrar_nombre es false.
+ * Los destacados van primero (en el orden de DESTACADOS); el resto conserva el orden del JSON.
+ */
 export function proyectosPortafolio(perfil: Perfil): ProyectoPortafolio[] {
+  const rango = (id: string) => {
+    const i = (DESTACADOS as readonly string[]).indexOf(id);
+    return i === -1 ? DESTACADOS.length : i;
+  };
   return perfil.proyectos
     .filter((p) => p.canales.includes("portafolio"))
-    .map((p) => ({ ...p, nombre: p.mostrar_nombre ? p.nombre : null }));
+    .map((p) => ({ ...p, nombre: p.mostrar_nombre ? p.nombre : null, destacado: rango(p.id) < DESTACADOS.length }))
+    .sort((a, b) => rango(a.id) - rango(b.id));
 }
 
 /** Datos que se envían al navegador: nada de proyectos fuera del canal portafolio ni nombres ocultos. */

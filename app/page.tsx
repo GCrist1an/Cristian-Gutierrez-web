@@ -1,5 +1,6 @@
 import Inicio from "@/components/Inicio";
-import { obtenerPerfil, perfilPublico } from "@/lib/perfil";
+import { obtenerPerfil } from "@/lib/obtener-perfil";
+import { perfilPublico } from "@/lib/perfil";
 
 export const revalidate = 86400;
 

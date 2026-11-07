@@ -9,44 +9,16 @@ import {
   Mail,
   MapPin,
   Menu,
-  MessageCircle,
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { enlaceWhatsApp, type PerfilPublico } from "@/lib/perfil";
+import { enlaceWhatsApp, ETIQUETAS_ESTADO, type PerfilPublico, type ProyectoPortafolio } from "@/lib/perfil";
 
 const enlaces = [
   ["Trabajo", "#trabajo"],
   ["Capacidades", "#capacidades"],
   ["Tecnología", "#tecnologia"],
   ["Gutierrez Systems", "#gutierrez-systems"],
-] as const;
-
-const proyectos = [
-  {
-    nombre: "GS ContractOps",
-    categoria: "Producto Gutierrez Systems",
-    estado: "Discovery",
-    descripcion:
-      "Operación contractual convertida en un flujo trazable de planificación, ejecución, evidencias, supervisión y entregables.",
-    tecnologia: "Next.js · Arquitectura modular · Supabase",
-  },
-  {
-    nombre: "EMINSER Cierre de Nómina",
-    categoria: "Automatización operativa",
-    estado: "En operación",
-    descripcion:
-      "Consolidación de asistencia, novedades e incidencias para agilizar la revisión mensual previa al cierre de nómina.",
-    tecnologia: "Next.js · React · Supabase",
-  },
-  {
-    nombre: "GS Document Verification",
-    categoria: "Producto Gutierrez Systems",
-    estado: "Base técnica",
-    descripcion:
-      "Validación documental, trazabilidad y generación de expedientes verificables para procesos operativos.",
-    tecnologia: "React · FastAPI · Python",
-  },
 ] as const;
 
 const capacidades = [
@@ -76,10 +48,48 @@ const entrada = {
   transition: { duration: 0.45, ease: "easeOut" as const },
 };
 
+function TarjetaProyecto({ proyecto }: { proyecto: ProyectoPortafolio }) {
+  const { destacado } = proyecto;
+  return (
+    <motion.article
+      {...entrada}
+      className={`grupo-tarjeta flex flex-col justify-between rounded-3xl border p-6 ${
+        destacado ? "min-h-[280px] border-[var(--accent)]/30 bg-[var(--surface)]" : "min-h-[245px] border-white/8 bg-[var(--surface)]/75"
+      }`}
+    >
+      <div>
+        <div className="flex items-start justify-between gap-3">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--accent)]">{destacado ? "Destacado" : ""}</span>
+          <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] text-[var(--muted)]">{ETIQUETAS_ESTADO[proyecto.estado]}</span>
+        </div>
+        {proyecto.nombre && <h3 className={`mt-6 font-semibold ${destacado ? "text-2xl" : "text-xl"}`}>{proyecto.nombre}</h3>}
+        <p className={`${proyecto.nombre ? "mt-3" : "mt-6"} text-sm leading-6 text-[var(--muted-light)]`}>{proyecto.descripcion}</p>
+      </div>
+      {(proyecto.stack.length > 0 || proyecto.url) && (
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/7 pt-4">
+          {proyecto.stack.length > 0 && <p className="text-xs text-[var(--muted)]">{proyecto.stack.join(" · ")}</p>}
+          {proyecto.url && (
+            <a
+              href={proyecto.url}
+              target="_blank"
+              rel="noreferrer"
+              className={destacado ? "boton-principal px-4 py-2 text-sm" : "inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)] hover:underline"}
+            >
+              Ver proyecto <ArrowUpRight size={15} />
+            </a>
+          )}
+        </div>
+      )}
+    </motion.article>
+  );
+}
+
 export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
   const { contacto, persona } = perfil;
   const [nombrePila, ...resto] = persona.nombre_corto.split(" ");
   const apellidos = resto.join(" ");
+  const destacados = perfil.proyectos.filter((p) => p.destacado);
+  const otros = perfil.proyectos.filter((p) => !p.destacado);
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
@@ -147,7 +157,7 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
             </div>
             <div className="mt-3 flex flex-wrap gap-3" aria-label="Contacto">
               <a href={`mailto:${contacto.correo}`} className="boton-secundario"><Mail size={17} /> Correo</a>
-              <a href={enlaceWhatsApp(contacto.whatsapp)} target="_blank" rel="noreferrer" className="boton-secundario"><MessageCircle size={17} /> WhatsApp</a>
+              <a href={enlaceWhatsApp(contacto.whatsapp)} target="_blank" rel="noreferrer" className="boton-secundario"><img src="https://cdn.simpleicons.org/whatsapp/ffffff" alt="" width="17" height="17" className="h-[17px] w-[17px] object-contain" /> WhatsApp</a>
               <a href={contacto.github} target="_blank" rel="noreferrer" className="boton-secundario"><GitBranch size={17} /> GitHub</a>
               <a href={contacto.linkedin} target="_blank" rel="noreferrer" className="boton-secundario"><BriefcaseBusiness size={17} /> LinkedIn</a>
             </div>
@@ -167,10 +177,12 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
                 className="aspect-[430/764] w-full bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: 'url("/images/cristian-gutierrez.webp")' }}
               />
-              <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-black/45 p-4 backdrop-blur-md">
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">Enfoque</p>
-                <p className="mt-1 text-sm text-white/85">Personas · Procesos · Tecnología · Evidencia</p>
-              </div>
+              {persona.enfoque && persona.enfoque.length > 0 && (
+                <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-black/45 p-4 backdrop-blur-md">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--accent)]">Enfoque</p>
+                  <p className="mt-1 text-sm text-white/85">{persona.enfoque.join(" · ")}</p>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>
@@ -183,24 +195,18 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">01 · Trabajo seleccionado</p>
               <h2 className="mt-3 titulo-seccion">Problemas concretos. Sistemas mantenibles.</h2>
             </div>
-            <p className="max-w-xl text-sm leading-6 text-[var(--muted)]">Aquality se mantiene como colaboración técnica externa, separada de los productos propios.</p>
           </motion.div>
 
-          <div className="grid gap-4 lg:grid-cols-3">
-            {proyectos.map((proyecto) => (
-              <motion.article key={proyecto.nombre} {...entrada} className="grupo-tarjeta flex min-h-[245px] flex-col justify-between rounded-3xl border border-white/8 bg-[var(--surface)]/75 p-6">
-                <div>
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--accent)]">{proyecto.categoria}</span>
-                    <span className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] text-[var(--muted)]">{proyecto.estado}</span>
-                  </div>
-                  <h3 className="mt-6 text-xl font-semibold">{proyecto.nombre}</h3>
-                  <p className="mt-3 text-sm leading-6 text-[var(--muted-light)]">{proyecto.descripcion}</p>
-                </div>
-                <p className="mt-5 border-t border-white/7 pt-4 text-xs text-[var(--muted)]">{proyecto.tecnologia}</p>
-              </motion.article>
-            ))}
-          </div>
+          {destacados.length > 0 && (
+            <div className="grid gap-4 lg:grid-cols-2">
+              {destacados.map((proyecto) => <TarjetaProyecto key={proyecto.id} proyecto={proyecto} />)}
+            </div>
+          )}
+          {otros.length > 0 && (
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {otros.map((proyecto) => <TarjetaProyecto key={proyecto.id} proyecto={proyecto} />)}
+            </div>
+          )}
         </div>
       </section>
 
