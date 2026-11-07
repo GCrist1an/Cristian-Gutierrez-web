@@ -1,33 +1,39 @@
 import type { Metadata } from "next";
+import { obtenerPerfil } from "@/lib/obtener-perfil";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Cristian David Gutiérrez | Software, Automatización y Operaciones",
-  description:
-    "Perfil profesional de Cristian David Gutiérrez. Ingeniería de software, automatización y soluciones tecnológicas aplicadas a procesos operativos.",
-  keywords: [
-    "Cristian David Gutiérrez",
-    "software",
-    "automatización",
-    "operaciones",
-    "Next.js",
-    "TypeScript",
-    "Gutierrez Systems",
-  ],
-  authors: [{ name: "Cristian David Gutiérrez" }],
-  creator: "Cristian David Gutiérrez",
-  openGraph: {
-    type: "website",
-    locale: "es_CO",
-    title: "Cristian David Gutiérrez | Software, Automatización y Operaciones",
-    description:
-      "Transformo procesos operativos en soluciones tecnológicas trazables, eficientes y mantenibles.",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { persona, contacto } = await obtenerPerfil();
+  const titulo = `${persona.nombre_corto} | ${persona.titular}`;
+  const descripcion = persona.frase;
+  const url = contacto.portafolio;
+
+  return {
+    ...(url && { metadataBase: new URL(url), alternates: { canonical: "/" } }),
+    title: titulo,
+    description: descripcion,
+    keywords: [persona.nombre, persona.nombre_corto, ...persona.titular.split(" · ")],
+    authors: [{ name: persona.nombre, url }],
+    creator: persona.nombre,
+    openGraph: {
+      type: "website",
+      locale: "es_CO",
+      url: url ?? undefined,
+      siteName: persona.nombre_corto,
+      title: titulo,
+      description: descripcion,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: titulo,
+      description: descripcion,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
