@@ -106,6 +106,21 @@ describe("proyectosPortafolio", () => {
   });
 });
 
+describe("contacto opcional de la empresa", () => {
+  it("acepta facebook_empresa y github_empresa como textos", () => {
+    const perfil = copia();
+    perfil.contacto.facebook_empresa = "https://www.facebook.com/GutierrezSystems/";
+    perfil.contacto.github_empresa = "https://github.com/Gutierrez-Systems";
+    expect(() => validarPerfil(perfil)).not.toThrow();
+  });
+
+  it("rechaza github_empresa vacío", () => {
+    const perfil = copia();
+    perfil.contacto.github_empresa = "";
+    expect(() => validarPerfil(perfil)).toThrow(/contacto\.github_empresa/);
+  });
+});
+
 describe("persona.enfoque", () => {
   it("es opcional", () => {
     const perfil = copia();

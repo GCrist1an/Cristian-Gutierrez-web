@@ -171,7 +171,8 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted-light)] sm:text-xl">{persona.frase}</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a href="#trabajo" className="boton-principal">Ver mi trabajo <ArrowDownRight size={18} /></a>
-              <a href="/cv/CV Cristian Gutierrez ***REMOVED***.pdf" download="Cristian Gutierrez ***REMOVED***.pdf" className="boton-secundario"><ArrowDownRight size={17} /> Descargar CV</a>
+              <a href="/CV_Cristian_Gutierrez_QA_Desarrollador.pdf" download className="boton-secundario"><ArrowDownRight size={17} /> Descargar CV</a>
+              <a href={contacto.empresa} target="_blank" rel="noreferrer" className="boton-secundario"><ArrowUpRight size={17} /> Mi empresa</a>
             </div>
             <div className="mt-3 flex flex-wrap gap-3" aria-label="Contacto">
               <a href={`mailto:${contacto.correo}`} className="boton-secundario"><Mail size={17} /> Correo</a>
@@ -306,8 +307,8 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
             <p className="mt-4 text-sm leading-6 text-[var(--muted-light)]">Desarrollo Gutierrez Systems como entorno corporativo para software, automatización, calidad y soluciones aplicadas a operaciones.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a href={contacto.empresa} target="_blank" rel="noreferrer" className="boton-principal">Sitio corporativo <ArrowUpRight size={16} /></a>
-              <a href="https://github.com/Gutierrez-Systems" target="_blank" rel="noreferrer" className="boton-secundario"><GitBranch size={16} /> GitHub</a>
-              <a href="https://www.facebook.com/GutierrezSystems/" target="_blank" rel="noreferrer" className="boton-secundario"><img src="https://cdn.simpleicons.org/facebook/ffffff" alt="" width="16" height="16" className="h-4 w-4 object-contain" /> Facebook</a>
+              <a href={contacto.github_empresa ?? "https://github.com/Gutierrez-Systems"} target="_blank" rel="noreferrer" className="boton-secundario"><GitBranch size={16} /> GitHub</a>
+              <a href={contacto.facebook_empresa ?? "https://www.facebook.com/GutierrezSystems/"} target="_blank" rel="noreferrer" className="boton-secundario"><img src="https://cdn.simpleicons.org/facebook/ffffff" alt="" width="16" height="16" className="h-4 w-4 object-contain" /> Facebook</a>
             </div>
           </div>
 

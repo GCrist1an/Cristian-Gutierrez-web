@@ -31,6 +31,8 @@ export type Contacto = {
   github: string;
   empresa: string;
   portafolio?: string;
+  facebook_empresa?: string;
+  github_empresa?: string;
 };
 
 export type Proyecto = {
@@ -96,8 +98,12 @@ export function validarPerfil(datos: unknown): Perfil {
     if (persona.enfoque !== undefined && !esListaTextos(persona.enfoque)) errores.push("persona.enfoque debe ser una lista de textos");
   } else errores.push("persona debe ser un objeto");
 
-  if (esObjeto(contacto)) exigirTextos(contacto, ["correo", "whatsapp", "linkedin", "github", "empresa"], "contacto", errores);
-  else errores.push("contacto debe ser un objeto");
+  if (esObjeto(contacto)) {
+    exigirTextos(contacto, ["correo", "whatsapp", "linkedin", "github", "empresa"], "contacto", errores);
+    for (const campo of ["facebook_empresa", "github_empresa"]) {
+      if (contacto[campo] !== undefined && !esTexto(contacto[campo])) errores.push(`contacto.${campo} debe ser un texto no vacío`);
+    }
+  } else errores.push("contacto debe ser un objeto");
 
   if (esObjeto(habilidades)) {
     if (!esListaTextos(habilidades.qa)) errores.push("habilidades.qa debe ser una lista de textos");
