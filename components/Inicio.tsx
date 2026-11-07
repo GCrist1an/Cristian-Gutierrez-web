@@ -16,28 +16,44 @@ import { enlaceWhatsApp, ETIQUETAS_ESTADO, type PerfilPublico, type ProyectoPort
 
 const enlaces = [
   ["Trabajo", "#trabajo"],
-  ["Capacidades", "#capacidades"],
-  ["Tecnología", "#tecnologia"],
+  ["Habilidades", "#habilidades"],
   ["Gutierrez Systems", "#gutierrez-systems"],
 ] as const;
 
-const capacidades = [
-  ["Software", "Construyo soluciones mantenibles alrededor de procesos reales."],
-  ["Automatización", "Reduzco trabajo repetitivo con flujos, reglas y evidencia."],
-  ["Operaciones", "Conecto equipos, actividades, incidencias y control digital."],
-  ["Calidad", "Integro validación, CI, documentación y trazabilidad."],
-] as const;
+/** Títulos de los grupos de habilidades del JSON; si llega un grupo nuevo se usa su clave. */
+const TITULOS_GRUPO: Record<string, string> = {
+  qa: "QA",
+  lenguajes: "Lenguajes",
+  desarrollo: "Desarrollo",
+  bases_de_datos: "Bases de datos",
+  herramientas: "Herramientas",
+};
+const tituloGrupo = (clave: string) => TITULOS_GRUPO[clave] ?? clave.replace(/_/g, " ");
 
-const tecnologias = [
-  ["TypeScript", "https://cdn.simpleicons.org/typescript"],
-  ["React", "https://cdn.simpleicons.org/react"],
-  ["Next.js", "https://cdn.simpleicons.org/nextdotjs/ffffff"],
-  ["Python", "https://cdn.simpleicons.org/python"],
-  ["FastAPI", "https://cdn.simpleicons.org/fastapi"],
-  ["Supabase", "https://cdn.simpleicons.org/supabase"],
-  ["GitHub Actions", "https://cdn.simpleicons.org/githubactions"],
-  ["Vite", "https://cdn.simpleicons.org/vite"],
-] as const;
+/** Logos de Simple Icons para las habilidades que tienen uno (slug o slug/color). */
+const LOGOS: Record<string, string> = {
+  JavaScript: "javascript",
+  TypeScript: "typescript",
+  Python: "python",
+  React: "react",
+  "Next.js": "nextdotjs/ffffff",
+  "Node.js": "nodedotjs",
+  Angular: "angular",
+  HTML: "html5",
+  CSS: "css",
+  FastAPI: "fastapi",
+  Vite: "vite",
+  PostgreSQL: "postgresql",
+  MySQL: "mysql",
+  MongoDB: "mongodb",
+  Supabase: "supabase",
+  Git: "git",
+  GitHub: "github/ffffff",
+  "GitHub Actions": "githubactions",
+  Vercel: "vercel/ffffff",
+  Jira: "jira",
+  Notion: "notion/ffffff",
+};
 
 const proceso = ["Entender", "Diseñar", "Construir", "Validar", "Documentar", "Mejorar"] as const;
 
@@ -90,6 +106,8 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
   const apellidos = resto.join(" ");
   const destacados = perfil.proyectos.filter((p) => p.destacado);
   const otros = perfil.proyectos.filter((p) => !p.destacado);
+  const { habilidades, capacidades } = perfil;
+  const gruposTecnicos = Object.entries(habilidades).filter(([grupo, lista]) => grupo !== "qa" && lista.length > 0);
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
@@ -210,46 +228,63 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
         </div>
       </section>
 
-      <section id="capacidades" className="scroll-mt-20 py-14 sm:py-16">
+      <section id="habilidades" className="scroll-mt-20 py-14 sm:py-16">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <motion.div {...entrada}>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">02 · Capacidades</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">02 · Habilidades</p>
             <h2 className="mt-3 titulo-seccion">Tecnología conectada con operación.</h2>
           </motion.div>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {capacidades.map(([titulo, descripcion]) => (
-              <motion.div key={titulo} {...entrada} className="tarjeta-suave p-5">
-                <h3 className="text-base font-semibold">{titulo}</h3>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{descripcion}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      <section id="tecnologia" className="scroll-mt-20 border-y border-white/6 bg-white/[0.012] py-11">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <motion.div {...entrada} className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
-            <div className="shrink-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">03 · Tecnología</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight">Stack habitual</h2>
-            </div>
-            <div className="grid flex-1 grid-cols-4 gap-3 sm:grid-cols-8">
-              {tecnologias.map(([nombre, logo]) => (
-                <div key={nombre} className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-white/8 bg-white/[0.025] p-3 text-center">
-                  <img src={logo} alt={`Logo de ${nombre}`} width="30" height="30" loading="lazy" className="h-7 w-7 object-contain" />
-                  <span className="text-[11px] leading-4 text-[var(--muted-light)]">{nombre}</span>
-                </div>
+          <div className="mt-8 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+            <motion.div {...entrada} className="rounded-3xl border border-[var(--accent)]/30 bg-[var(--surface)] p-6 sm:p-7">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--accent)]">Enfoque principal</p>
+              <h3 className="mt-3 text-2xl font-semibold">{tituloGrupo("qa")}</h3>
+              <ul className="mt-5 space-y-3">
+                {habilidades.qa.map((habilidad) => (
+                  <li key={habilidad} className="flex items-start gap-3 text-sm leading-6 text-[var(--muted-light)]">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]" aria-hidden="true" />
+                    {habilidad}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {gruposTecnicos.map(([grupo, lista]) => (
+                <motion.div key={grupo} {...entrada} className="tarjeta-suave p-5">
+                  <h3 className="text-base font-semibold">{tituloGrupo(grupo)}</h3>
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {lista.map((habilidad) => (
+                      <li key={habilidad} className="flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.025] px-3 py-1.5 text-xs text-[var(--muted-light)]">
+                        {LOGOS[habilidad] && (
+                          <img src={`https://cdn.simpleicons.org/${LOGOS[habilidad]}`} alt="" width="14" height="14" loading="lazy" className="h-3.5 w-3.5 object-contain" />
+                        )}
+                        {habilidad}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
+
+          {capacidades && capacidades.length > 0 && (
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {capacidades.map(({ nombre, descripcion }) => (
+                <motion.div key={nombre} {...entrada} className="tarjeta-suave p-5">
+                  <h3 className="text-base font-semibold">{nombre}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{descripcion}</p>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       <section className="py-12 sm:py-14">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
           <motion.div {...entrada} className="rounded-3xl border border-white/8 bg-[var(--surface)]/55 p-6 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">04 · Cómo trabajo</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">03 · Cómo trabajo</p>
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {proceso.map((paso, indice) => (
                 <div key={paso} className="relative rounded-2xl border border-white/7 bg-white/[0.02] px-4 py-4">
@@ -266,7 +301,7 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
       <section id="gutierrez-systems" className="scroll-mt-20 pb-14 sm:pb-16">
         <motion.div {...entrada} className="mx-auto grid max-w-7xl gap-4 px-5 sm:px-8 lg:grid-cols-2 lg:px-10">
           <div className="rounded-[2rem] border border-[var(--accent)]/20 bg-[linear-gradient(135deg,rgba(88,166,255,.10),rgba(22,27,34,.75))] p-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">05 · Gutierrez Systems</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">04 · Gutierrez Systems</p>
             <h2 className="mt-4 text-2xl font-semibold tracking-tight">Software y automatización aplicada a operaciones.</h2>
             <p className="mt-4 text-sm leading-6 text-[var(--muted-light)]">Desarrollo Gutierrez Systems como entorno corporativo para software, automatización, calidad y soluciones aplicadas a operaciones.</p>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -287,7 +322,7 @@ export default function Inicio({ perfil }: { perfil: PerfilPublico }) {
 
       <section id="contacto" className="border-t border-white/6 py-14 text-center sm:py-16">
         <motion.div {...entrada} className="mx-auto max-w-4xl px-5 sm:px-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">06 · Contacto</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">05 · Contacto</p>
           <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">¿Tienes un proceso que necesita ser más claro, medible o automatizado?</h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-[var(--muted-light)]">Podemos hablar de software, automatización, operaciones digitales o colaboración técnica.</p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
